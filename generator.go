@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"path"
+	"strings"
 
 	"github.com/alecthomas/template"
 	"github.com/golang/protobuf/proto"
@@ -61,7 +63,7 @@ func (g *generator) generateFile(file *descriptor.FileDescriptorProto) (*plugin.
 	}
 
 	resp := &plugin.CodeGeneratorResponse_File{}
-	resp.Name = proto.String("service_twirp.rb")
+	resp.Name = proto.String(getOutputFilename(file))
 	resp.Content = proto.String(buffer.String())
 
 	return resp, nil
@@ -77,4 +79,13 @@ func getFileDescriptor(req *plugin.CodeGeneratorRequest, name string) (*descript
 	}
 
 	return nil, fmt.Errorf("could not find descriptor for %q", name)
+}
+
+// getOutputFilename determines what the filename should be for the generated
+// Ruby code.
+func getOutputFilename(file *descriptor.FileDescriptorProto) string {
+	name := file.GetName()
+	name = strings.TrimSuffix(name, path.Ext(name))
+
+	return name + "_twirp.rb"
 }
