@@ -225,7 +225,7 @@ module {{ .ModuleName }}
 
         # Authenticate with Basic Auth if a username or password was provided.
         if @server.user || @server.password
-          request.basic_auth(url.user, url.password)
+          request.basic_auth(@server.user, @server.password)
         end
 
         response = http.request(request)
